@@ -2,12 +2,12 @@
 # vi: set ft=ruby  :
 
 machines = {
-	"manager01"         => {"memory" => "4096", "cpu" => "2", "ip" => "101", "image" => "ubuntu/bionic64"},
-   #"manager02"         => {"memory" => "4096", "cpu" => "2", "ip" => "102", "image" => "centos/7"},
-    "worker01"          => {"memory" => "1024", "cpu" => "2", "ip" => "104", "image" => "ubuntu/bionic64"},
-    "worker02"          => {"memory" => "1024", "cpu" => "2", "ip" => "105", "image" => "centos/7"},
-    "dtr"               => {"memory" => "1024", "cpu" => "2", "ip" => "106", "image" => "ubuntu/bionic64"},
-    "monitoring-server" => {"memory" => "1024", "cpu" => "2", "ip" => "150", "image" => "ubuntu/bionic64"},
+	  "manager01"         => {"memory" => "4096", "cpu" => "2", "ip" => "101", "image" => "centos/7"},
+    "manager02"         => {"memory" => "4096", "cpu" => "2", "ip" => "102", "image" => "ubuntu/bionic64"},
+   #"worker01"          => {"memory" => "1024", "cpu" => "2", "ip" => "104", "image" => "centos/7"},
+   #"worker02"          => {"memory" => "1024", "cpu" => "2", "ip" => "105", "image" => "ubuntu/bionic64"},
+   #"dtr"               => {"memory" => "1024", "cpu" => "2", "ip" => "106", "image" => "ubuntu/bionic64"},
+   #"monitoring-server" => {"memory" => "1024", "cpu" => "2", "ip" => "150", "image" => "ubuntu/bionic64"},
 
 }
 
@@ -25,11 +25,20 @@ Vagrant.configure("2") do |config|
         vb.memory = conf["memory"]
         vb.cpus = conf["cpu"]
         #vb.customize ["modifyvm", :id, "--groups", "/lab_k8s"]
-      end
-       if "#{conf["image"]}" == "ubuntu/bionic64"
-         machine.vm.provision "shell", inline: "apt-get update ; hostnamectl set-hostname #{name}.dexter.com.br"
-       end
+        machine.vm.provision "shell", inline: "hostnamectl set-hostname #{name}.dexter.com.br"  
+        machine.vm.provision "ansible" do |ansible|
+          ansible.groups = {
+            "ubuntus" => ["manager02", "worker02", "dtr"],
+            "centos" => ["manager01", "worker01"],
+          }
+          if "#{conf["image"]}" == "ubuntu/bionic64"
+          ansible.playbook = "provision/playbook-ubuntu.yaml"
+          end
+          if "#{conf["image"]}" == "centos/7"
+          ansible.playbook = "provision/playbook-centos.yaml"
+          end
+        end    
+        end
+        end    
     end
   end
-  config.vm.provision "shell", path: "../arquivos/script.sh"
-end
