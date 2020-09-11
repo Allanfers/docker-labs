@@ -39,4 +39,9 @@
 
     - name: Install Docker Module for Python
       pip:
-        name: docker    
+        name: docker
+    
+    - name: Add the user 'vagrant' to docker group
+      user:
+        name: vagrant
+        group: docker            

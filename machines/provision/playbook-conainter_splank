@@ -1,0 +1,5 @@
+docker container run -d -p 8000:8000 --name splunk-server -e \
+'SPLUNK_START_ARGS=--accept-license' -e \
+'SPLUNK_PASSWORD=CursoDocker2019@2' splunk/splunk
+---
+
