@@ -25,15 +25,16 @@ Vagrant.configure("2") do |config|
         vb.memory = conf["memory"]
         vb.cpus = conf["cpu"]
         #vb.customize ["modifyvm", :id, "--groups", "/lab_k8s"]
-        machine.vm.provision "shell", inline: "hostnamectl set-hostname #{name}.dexter.com.br"  
+        machine.vm.provision "shell", inline: "hostnamectl set-hostname #{name}.dexter.com.br"
         machine.vm.provision "ansible" do |ansible|
           ansible.groups = {
             "ubuntus" => ["manager01", "worker02", "dtr", "monitoring-server"],
             "centos" => ["manager02"],
           }
-          ansible.playbook = "provision/playbook-ubuntu.yaml"
-          #ansible.playbook = "provision/playbook-centos.yaml"
-          end    
+        ansible.playbook = "provision/playbook-ubuntu.yaml"
+        #ansible.playbook = "provision/playbook-centos.yaml"
+        machine.vm.provision "shell", inline: "sudo docker-compose run -d splunk-server" 
+      end    
         end
         end    
     end
