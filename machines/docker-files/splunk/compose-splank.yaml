@@ -1,13 +1,13 @@
 ---
-version: "3.6"
+version: "3"
 
 services:
   splunk-server:
-    image: ${SPLUNK_IMAGE:-splunk/splunk:latest}
-    hostname: splunk-server
+    image: "splunk/splunk:latest"
+    hostname: "splunk-server"
     environment:
       - SPLUNK_START_ARGS=--accept-license
       - SPLUNK_LICENSE_URI=free
       - SPLUNK_PASSWORD=CursoDocker2019@2
     ports:
-      - 8000
+      - "8000:8000"
